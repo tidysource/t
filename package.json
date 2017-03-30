@@ -1,0 +1,32 @@
+{
+  "name": "t",
+  "version": "1.0.0",
+  "description": "Content management framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tidysource/t.git"
+  },
+  "keywords": [
+    "cmf",
+    "cms"
+  ],
+  "author": "TidySource (Daniel Cobo)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tidysource/t/issues"
+  },
+  "homepage": "https://github.com/tidysource/t#readme",
+  "devDependencies": {
+    "tidytest": "^1.0.1"
+  },
+  "dependencies": {
+    "objref": "^1.0.0",
+    "tidydir": "^1.0.4",
+    "tidypath": "^1.5.2",
+    "tidyval": "^1.0.0"
+  }
+}
