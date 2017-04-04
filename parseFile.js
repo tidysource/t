@@ -17,7 +17,9 @@ module.exports = function parseFile(files, parserObj){
 		if (typeof parser === 'function'){
 			file.parsed = parser(file.content);
 			for (prop in file.parsed){
-				if (prop.slice(0,1) === '_'){
+				if (prop.slice(0,1) === '_' && 
+					prop !== '_ext' &&
+					prop !== '_content'){
 					throw new Error([
 									'Invalid property:',prop,
 									'names starting with "_" are reserved'
