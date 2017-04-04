@@ -11,7 +11,7 @@ module.exports = function matchTemplates(_db, teamplateFiles){
 	//Build index
 	var templates = {};
 	templateFiles.map(function(template){
-		templates[template.path] = template.content;
+		templates[template.path] = template;
 	});
 	
 	//Match
@@ -45,7 +45,11 @@ module.exports = function matchTemplates(_db, teamplateFiles){
 			}
 		}
 		
-		item._templateMatch = template;
+		item._templateMatch = template.content;
+		//Default to template extension
+		if (typeof item._ext === 'undefined'){
+			item._ext === 'undefined';
+		}
 	}
 	
 	return _db;
