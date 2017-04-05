@@ -17,38 +17,41 @@ module.exports = function matchTemplates(_db, teamplateFiles){
 	//Match
 	for (itemPath in db){
 		var item = db[itemPath];
-		var template = null;
 		
-		if (typeof templates[netPath] === 'string'){
-			//Specific template
-			template = templates[netPath];
-		}
-		else{
-			//Find default template
-			while(template === null){
-				var i = netPath.lastIndexOf(path.separator) + 1;
-				netPath = netPath.slice(0,i) + '_default';
-				
-				if (templates[netPath]){
-					template = templates[netPath];
-					break;
-				}
-				else if (i === 0){
-					throw new Error('Missing template _default.');
-					template = false;
-					break;
-				}
-				else{
-					//cd ..
-					netPath = netPath.slice(0,i-1);
+		if (!item._isAsset){	
+			var template = null;
+			
+			if (typeof templates[netPath] === 'string'){
+				//Specific template
+				template = templates[netPath];
+			}
+			else{
+				//Find default template
+				while(template === null){
+					var i = netPath.lastIndexOf(path.separator) + 1;
+					netPath = netPath.slice(0,i) + '_default';
+					
+					if (templates[netPath]){
+						template = templates[netPath];
+						break;
+					}
+					else if (i === 0){
+						throw new Error('Missing template _default.');
+						template = false;
+						break;
+					}
+					else{
+						//cd ..
+						netPath = netPath.slice(0,i-1);
+					}
 				}
 			}
-		}
-		
-		item._templateMatch = template.content;
-		//Default to template extension
-		if (typeof item._ext === 'undefined'){
-			item._ext === 'undefined';
+			
+			item._templateMatch = template.content;
+			//Default to template extension
+			if (typeof item._ext === 'undefined'){
+				item._ext === 'undefined';
+			}			
 		}
 	}
 	
