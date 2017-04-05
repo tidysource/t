@@ -7,15 +7,15 @@ module.exports = function folderize(_db){
 		var item = _db[netPath];
 		if (item._content){
 			//Item write path
-			var folderizeStr = '';
+			var folderize = '';
 			if (item._ext === '.html'){
-				folderizeStr = path.separator + 'index.html';
+				folderize = path.separator + 'index.html';
 			}			
 			_db[netPath]._url = [
-								config.folders.result, 
+								config.baseURL,
 								path.separator, 
 								netPath,
-								folderizeStr,
+								folderize,
 								item._ext
 								].join('');
 		}
