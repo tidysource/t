@@ -11,7 +11,7 @@ var build_all = require('./build_all.js');
 var build_templates = require('./build_templates.js');
 var matchTemplates = require('./matchTemplates.js');
 var build_data = require('./build_data.js');
-var folderize = require('./folderize.js');
+var set_url = require('./set_url.js');
 var write = require('./write.js');
 
 Promise.all([
@@ -67,11 +67,12 @@ Promise.all([
 	_db = build_data(_db); //reference object to show relation between items in _db
 	
 	/*
-	Folderize
+	Set ._url
 	---------
+	Sets the ._url property (link to content)
 	Make files that have .html extension to treePath/itemName/index.html
 	*/
-	_db = folderize(_db);
+	_db = set_url(_db);
 	
 	/*
 	Write
