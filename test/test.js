@@ -17,13 +17,12 @@ Tests
 test('t()', function(assert){
     assert.plan(1);
 
-	t()
-	.then(function(){
+	t().then(function(){
 		assert.ok(true, 't() works');
 	})
 	.catch(function(err){
 		console.log(err);
-		assert.fail();
+		assert.fail('t() failed');
 	});
 });
 
