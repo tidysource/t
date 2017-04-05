@@ -11,7 +11,7 @@ module.exports = function write(_db){
 			var fileObj = {};
 			
 			//Item write path
-			fileObj.path = item._url;
+			fileObj.path = config.folders.result + item._url.slice(config.baseURL);
 							
 			//Item content
 			if (item._isAsset){
