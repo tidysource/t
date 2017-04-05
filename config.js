@@ -3,7 +3,8 @@
 var config = {
 	folders : {
 		data : './_data',
-		templates : './_template'
+		templates : './_template',
+		result : './_public'
 	},
 	parse : {
 		json : JSON.parse,
@@ -12,9 +13,7 @@ var config = {
 		js : 'utf8',
 		css : 'utf8'
 	},
-	ext : {
-		mustache : 'html'
-	}
+	//templateEngine(item)
 	write : {
 		string : 'uft8' // options
 	}
