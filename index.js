@@ -3,7 +3,7 @@
 var dir = require('tidydir');
 var path = require('tidypath');
 
-var config = require('./config.js');;
+var config = require('./config.js');
 var parseFile = require('./parse.js');
 var db = require('./db.js');
 var dbAddProp = require('./dbAddProp.js');
@@ -11,6 +11,8 @@ var build_all = require('./build_all.js');
 var build_templates = require('./build_templates.js');
 var matchTemplates = require('./matchTemplates.js');
 var build_data = require('./build_data.js');
+var folderize = require('./folderize.js');
+var write = require('./write.js');
 
 Promise.all([
 	dir.readTree(config.folders.data, null), //read data as buffer obj
@@ -62,11 +64,20 @@ Promise.all([
 	_db = matchTemplates(_db, templates.files);	//add ._templateMatch reference to all items
 	//Note: matched template will also provide fallback (unless set by parser) ._ext 
 	
-	var _db = build_data(_db); //reference object to show relation between items in _db
+	_db = build_data(_db); //reference object to show relation between items in _db
+	
+	/*
+	Folderize
+	---------
+	Make files that have .html extension to treePath/itemName/index.html
+	*/
+	_db = folderize(_db);
 	
 	/*
 	Write
 	-----
+	Nothing should change (just make file objects).
+	
 	if item._content write it
 		if item._isAsset is falsy 
 			run thgouth template engine
@@ -75,41 +86,7 @@ Promise.all([
 	else (no ._content) 
 		ignore (don't write it's a meta data item)
 	*/
-	var toWrite = [];
-	for (netPath in _db){
-		var item = _db[netPath];
-		if (item._content){
-			var fileObj = {};
-			
-			//Item write path
-			var folderize = '';
-			if (item._ext === '.html'){
-				folderize = path.separator + 'index.html';
-			}			
-			fileObj.path = [
-							config.folders.result, 
-							path.separator, 
-							netPath,
-							folderize,
-							item._ext
-							].join('');
-							
-			//Item content
-			if (item._isAsset){
-				fileObj.content = item._content;
-			}
-			else{
-				fileObj.content = confing.templateEngine(item, _templates);
-			}
-			
-			//Item write options
-			fileObj.options = item._options;
-					
-			toWrite.push(fileObj);
-		}
-	}
-	
-	return dir.mk(toWrite);
+	return write(_db);
 })
 .catch(function(err){
 	console.log(err);
