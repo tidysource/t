@@ -1,6 +1,7 @@
 'use strict';
 
 var config = {
+	baseURL : './',
 	folders : {
 		data : './_data',
 		templates : './_template',
