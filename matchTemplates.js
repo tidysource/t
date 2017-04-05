@@ -47,11 +47,7 @@ module.exports = function matchTemplates(_db, teamplateFiles){
 				}
 			}
 			
-			item._templateMatch = template.content;
-			//Default to template extension
-			if (typeof item._ext === 'undefined'){
-				item._ext === 'undefined';
-			}			
+			item._templateMatch = template.content;			
 		}
 	}
 	
