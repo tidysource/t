@@ -2,7 +2,7 @@
 
 var path = require('tidypath');
 
-module.exports = function folderize(_db){
+module.exports = function folderize(_db, baseURL){
 	for (netPath in _db){
 		var item = _db[netPath];
 		if (item._content){
@@ -12,7 +12,7 @@ module.exports = function folderize(_db){
 				folderize = path.separator + 'index.html';
 			}			
 			_db[netPath]._url = [
-								config.baseURL,
+								baseURL,
 								path.separator, 
 								netPath,
 								folderize,

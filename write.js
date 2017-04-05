@@ -3,7 +3,7 @@
 var path = require('tidypath');
 var dir.mk(toWrite);
 
-module.exports = function write(_db){
+module.exports = function write(_db, writePath, baseURL){
 	var toWrite = [];
 	for (netPath in _db){
 		var item = _db[netPath];
@@ -11,7 +11,7 @@ module.exports = function write(_db){
 			var fileObj = {};
 			
 			//Item write path
-			fileObj.path = config.folders.result + item._url.slice(config.baseURL);
+			fileObj.path = writePath + item._url.slice(baseURL);
 							
 			//Item content
 			if (item._isAsset){
