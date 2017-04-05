@@ -19,27 +19,41 @@ module.exports = function parseFile(files, parserObj){
 			for (prop in file.parsed){
 				if (prop.slice(0,1) === '_' && 
 					prop !== '_ext' &&
-					prop !== '_content'){
+					prop !== '_content' &&
+					prop !== '_options' &&
+					prop !== '_isAsset'){
 					throw new Error([
 									'Invalid property:',prop,
 									'names starting with "_" are reserved'
 									].join('\n'));
 				}
-			}	
-			file.parsed._isMeta = true; //this file is meta data
+			}
 		}
 		else if (typeof parser === 'string'){
 			var encoding = parser;
 			file.parsed = {
-				_content : file.content.toString(encoding)
+				_content : file.content.toString(encoding),
 			};
 		}
 		else{
 			//it's a buffer object (Buffer.isBuffer(file.content))
-			file.parsed = {_isAsset : true};
+			file.parsed = {
+				_content : file.content,
+				_isAsset : true,
+			};
 		}
 		
-		file.parsed._url = file.path; //<----- file URL
+		//For writeables
+		if (file.parsed._content){
+			//Set default options (same as content source file)
+			if (typeof file.parsed._options === 'undefined'){
+				file.parsed._options = file.options;
+			}
+			//Set default extension (same as content source file)
+			if (typeof file.parsed._ext === 'undefined'){
+				file._ext = path.ext(file.path);
+			}
+		}
 		
 		return file;
 	});	
