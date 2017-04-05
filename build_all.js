@@ -18,7 +18,7 @@ module.exports = function build_arr(_db){
 			dbTree._all = [];
 		}
 		dbTree._all.push(dbItem);
-	});
+	}
 	
 	return _db;
 };

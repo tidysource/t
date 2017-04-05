@@ -1,7 +1,7 @@
 'use strict';
 
 var path = require('tidypath');
-var dir.mk(toWrite);
+var dir = require('tidydir');
 
 module.exports = function write(_db, writePath, baseURL){
 	var toWrite = [];

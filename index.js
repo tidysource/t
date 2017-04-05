@@ -2,10 +2,10 @@
 
 var dir = require('tidydir');
 var path = require('tidypath');
-var valType = require('tidyval');
+var val = require('tidyval');
 
 var config = require('./config.js');
-var parseFile = require('./parse.js');
+var parseFile = require('./parseFile.js');
 var db = require('./db.js');
 var dbAddProp = require('./dbAddProp.js');
 var build_all = require('./build_all.js');

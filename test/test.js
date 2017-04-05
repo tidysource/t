@@ -8,7 +8,7 @@ Setup testing environment
 var test = require('tidytest');
 
 //Module to test
-var path = require('../index.js');
+var t = require('../index.js');
 
 /*
 Tests
@@ -17,9 +17,13 @@ Tests
 test('t()', function(assert){
     assert.plan(1);
 
-	t().catch(function(err){
+	t()
+	.then(function(){
+		assert.ok(true, 't() works');
+	})
+	.catch(function(err){
 		console.log(err);
 		assert.fail();
-	})
+	});
 });
 

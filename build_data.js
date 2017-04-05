@@ -21,7 +21,7 @@ module.exports = function build_data(_db){
 		}
 		
 		dbTree[name] = _db[netPath];
-	});
-	
+	}
+		
 	return _db;
 };

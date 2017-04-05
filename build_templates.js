@@ -19,7 +19,7 @@ module.exports = function build_templates(files, templatesPath){
 		}
 		
 		_templatesTree[name] = template.content;
-	}
+	});
 	
 	return _templates;
 };
