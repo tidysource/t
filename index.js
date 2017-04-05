@@ -2,8 +2,6 @@
 
 var dir = require('tidydir');
 var path = require('tidypath');
-var objRef = require('objref');
-var tidyval = require('tidyval');
 
 var config = require('./config.js');;
 var parseFile = require('./parse.js');
@@ -29,9 +27,21 @@ Promise.all([
 	/*
 	Parse files
 	-----------
-	File contents get parsed into an object (file.parsed) & ._isMeta.
-	Every file gets _url and if string gets _content else 
-	gets object (with isAsset:true) returned from parse.
+	File contents get parsed into an object (file.parsed).
+
+	If file is meant to be present in result (written) then 
+	it must have _content. It will also get a default ._ext
+	which is the same as the extension of the original file.
+	If file is not parsed it will automatically get _content
+	(which is same as file content, by default buffer object).
+	
+	Parsers may not return objects starting with "_", 
+	except ._ext and ._content, ._options and ._isAsset. 
+	
+	_isAsset property means the file should be copied as-is
+	and therefor it won't be be parsed later in a template
+	
+	Only meta data files may share file name in same path
 	*/
 	files = parseFile(tree.files, confing.parse);
 	
@@ -49,118 +59,57 @@ Promise.all([
 	
 	var _templates = build_templates(templates.files);	//Template files
 	_db = dbAddProp(_db, '._template', _templates);	//add ._templates reference to all items
-	_db = matchTemplates(_db, templates.files);	//add ._templateMatch reference to all items	
+	_db = matchTemplates(_db, templates.files);	//add ._templateMatch reference to all items
+	//Note: matched template will also provide fallback (unless set by parser) ._ext 
 	
 	var _db = build_data(_db); //reference object to show relation between items in _db
 	
 	/*
-	Write	//<--- CONTINUE HERE
+	Write
 	-----
-	if item._content --> parse through template --> write
-	else if item._isAsset (is not parsed, but a buffer) ---> write (just copy)
-	else ignore
-	
-	//<--- what about extensions
-	//<--- what about netPath/index.html for items?
+	if item._content write it
+		if item._isAsset is falsy 
+			run thgouth template engine
+		else 
+			just copy over
+	else (no ._content) 
+		ignore (don't write it's a meta data item)
 	*/
-	
 	var toWrite = [];
-	var itemAdded = {}; //helper obj
-	
-	files.map(function(file){
-		if (!file._isMeta &&
-			!itemAdded[file.netPath]){
-			itemAdded[file.netPath] = true;
-			var item = _db[file.netPath];
-			
-			var path = './public/';
-			var content;
-			var options;
-			
-			if(item._content){
-				path += file.netPath;//<--- can be meta data file, not the content file
-			}
-			else if (item._isAsset){
-				path += file.path;
-				content = file.content;
-				options = null;
-			}
-		}
-	})
-	
-	for (netPath in db){
-		var item = db[netPath];
-		var content;
-		var path;
-		var options;
-		
+	for (netPath in _db){
+		var item = _db[netPath];
 		if (item._content){
-			if 
+			var fileObj = {};
+			
+			//Item write path
+			var folderize = '';
+			if (item._ext === '.html'){
+				folderize = path.separator + 'index.html';
+			}			
+			fileObj.path = [
+							config.folders.result, 
+							path.separator, 
+							netPath,
+							folderize,
+							item._ext
+							].join('');
+							
+			//Item content
+			if (item._isAsset){
+				fileObj.content = item._content;
+			}
+			else{
+				fileObj.content = confing.templateEngine(item, _templates);
+			}
+			
+			//Item write options
+			fileObj.options = item._options;
+					
+			toWrite.push(fileObj);
 		}
-		else if (item._isAsset){
-			path = '.' + path.separator + netPath + ? <--- need data from original file object!
-		}
-		//templateEngine(item._data, item._templateMatch, _templates?)...
 	}
 	
 	return dir.mk(toWrite);
-
-	//---
-	var pages = []; //file objects to make pages from
-	
-	//Match template
-	for(var i=0; i<tree.files.length; ++i){
-		var file = file = tree.files[i];
-		if (file.parsed._content){
-			//Match template
-			var template = null;
-			if (templates[netPath]){
-				//Specific template
-				template = templates[netPath];
-			}
-			else{
-				//Find default template
-				while(template === null){
-					var i = netPath.lastIndexOf('/') + 1;
-					netPath = netPath.slice(0,i) + '_default';
-					
-					if (templates[netPath]){
-						template = templates[netPath];
-						break;
-					}
-					else if (i === 0){
-						throw new Error('Missing _default.');
-						template = false;
-					}
-					else{
-						//cd ..
-						netPath = netPath.slice(0,i-1);
-					}
-				}
-			}
-			
-			//Parse in template
-			file._data._data = _data;
-			file._data._templates = templates;
-			var templated = config.engine(file._data, template, file);
-			if (typeof templated === 'string'){
-				templated = {
-					content : templated,
-					options : config.write.string, 
-					path : file.netPath + path.separator + 'index.html'		
-				}	
-			}
-			
-			pages.push(templated);
-		}
-		if (file._isAsset){
-			file.options = null;
-			pages.push(file);
-		}
-	}
-	
-	//Write files
-	return dir.mk(pages);
 })
 .catch(function(err){
 	console.log(err);
