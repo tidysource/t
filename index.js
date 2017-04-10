@@ -17,8 +17,9 @@ var write = require('./write.js');
 
 module.exports = function t(param){
 	val(param).validate(['undefined','object']);
-	if (param){
-		config = param;
+	//Overwrite config with data in param
+	if (typeof param === 'object'){
+		config = Object.assign(config, param);
 	}
 	
 	return Promise.all([
