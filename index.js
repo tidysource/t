@@ -61,7 +61,7 @@ module.exports = function t(param){
 			
 			Only meta data files may share file name in same path
 			*/
-			files = parseFile(tree.files, confing.parse);
+			files = parseFile(tree.files, config.parse);
 			
 			/*
 			Data objects
