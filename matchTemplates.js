@@ -4,7 +4,7 @@ var val = require('tidyval');
 var path = require('tidypath');
 var objRef = require('objref');
 
-module.exports = function matchTemplates(_db, teamplateFiles){
+module.exports = function matchTemplates(_db, templateFiles){
 	val(_db).validate('object');
 	val(templateFiles).validate('array');
 	
