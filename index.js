@@ -27,11 +27,19 @@ module.exports = function t(param){
 			dir.readTree(config.folders.templates)
 		]).then(function(result){
 			var tree = result[0];
-			var templates = result[1];
+			var templatesTree = result[1];
 		
-			//Make netPath and treePath for each file
+			/*
+			Net paths
+			---------
+			*/
 			var files = tree.files.map(function(file){
-				file.netPath = path.rmExt(file.netPath);
+				var str = file.path.slice(config.folders.data.length);
+				file.netPath = path.rmExt(str);
+			});
+			var templates = templatesTree.files.map(function(templates){
+				var str = template.path.slice(config.folders.templates.length);
+				template.netPath = path.rmExt(str);
 			});
 			
 			/*
@@ -67,7 +75,7 @@ module.exports = function t(param){
 			var _db = db(files); //where data is kept
 			_db = build_all(_db); //add ._all properties to items in db
 			
-			var _templates = build_templates(templates.files, config.folders.templates);	//Template files
+			var _templates = build_templates(templates);	//Template files
 			_db = dbAddProp(_db, '._template', _templates);	//add ._templates reference to all items
 			_db = matchTemplates(_db, templates.files);	//add ._templateMatch reference to all items
 			//Note: matched template will also provide fallback (unless set by parser) ._ext 
