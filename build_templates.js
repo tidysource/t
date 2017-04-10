@@ -4,18 +4,16 @@ var val = require('tidyval');
 var path = require('tidypath');
 var objRef = require('objref');
 
-module.exports = function build_templates(files, templatesPath){
+module.exports = function build_templates(files){
 	_templates = {};
 	
 	files.map(function(template){
-		template.path = template.path.slice(templatesPath.length);
-		template.netPath = path.rmExt(template.path);
-		var treePath = path.tree(netPath);
-		var name = netPath.slice(treePath);
+		var treePath = path.tree(template.netPath);
+		var name = template.netPath.slice(treePath);
 		
 		var _templatesTree = templates;
 		if (treePath.length){
-			_templatesTree = objRef(_data, treePath, path.delimiter, true);
+			_templatesTree = objRef(_templates, treePath, path.delimiter, true);
 		}
 		
 		_templatesTree[name] = template.content;
