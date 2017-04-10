@@ -103,6 +103,6 @@ module.exports = function t(param){
 			else (no ._content) 
 				ignore (don't write it's a meta data item)
 			*/
-			return write(_db, config.folders.result, config.baseURL);
+			return write(_db, _templates, config.folders.result, config.baseURL);
 		});	
 };

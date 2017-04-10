@@ -3,7 +3,7 @@
 var path = require('tidypath');
 var dir = require('tidydir');
 
-module.exports = function write(_db, writePath, baseURL){
+module.exports = function write(_db, _templates, writePath, baseURL){
 	var toWrite = [];
 	for (netPath in _db){
 		var item = _db[netPath];
@@ -18,7 +18,7 @@ module.exports = function write(_db, writePath, baseURL){
 				fileObj.content = item._content;
 			}
 			else{
-				fileObj.content = confing.templateEngine(item, _templates);
+				fileObj.content = confing.templateEngine(item, item._templateMatch, _templates);
 			}
 			
 			//Item write options
