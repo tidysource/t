@@ -16,7 +16,7 @@ var config = {
 		js : 'utf8',
 		css : 'utf8'
 	},
-	templateEngine : tMustache(),
+	templateEngine : tMustache,
 	write : {
 		string : 'uft8' // options
 	}
