@@ -5,7 +5,7 @@ var path = require('tidypath');
 var objRef = require('objref');
 
 module.exports = function build_templates(files){
-	_templates = {};
+	var _templates = {};
 	
 	files.map(function(template){
 		var treePath = path.tree(template.netPath);
