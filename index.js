@@ -77,7 +77,7 @@ module.exports = function t(param){
 			
 			var _templates = build_templates(templates);	//Template files
 			_db = dbAddProp(_db, '._template', _templates);	//add ._templates reference to all items
-			_db = matchTemplates(_db, templates.files);	//add ._templateMatch reference to all items
+			_db = matchTemplates(_db, templates);	//add ._templateMatch reference to all items
 			//Note: matched template will also provide fallback (unless set by parser) ._ext 
 			
 			_db = build_data(_db); //reference object to show relation between items in _db
