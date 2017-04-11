@@ -7,7 +7,7 @@ var objRef = require('objref');
 module.exports = function build_data(_db){
 	var _data = {};
 	
-	val(_db).validate('array');
+	val(_db).validate('object');
 	
 	for (netPath in _db){	//file.netPath
 		_db[netPath]._data = _data;
