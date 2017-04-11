@@ -1,5 +1,7 @@
 'use strict';
 
+var tMustache = require('tmustache');
+
 var config = {
 	baseURL : './',
 	folders : {
@@ -14,7 +16,7 @@ var config = {
 		js : 'utf8',
 		css : 'utf8'
 	},
-	//templateEngine(item)
+	templateEngine : tMustache(),
 	write : {
 		string : 'uft8' // options
 	}

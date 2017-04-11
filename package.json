@@ -27,6 +27,7 @@
     "objref": "^1.0.0",
     "tidydir": "^1.0.4",
     "tidypath": "^1.5.2",
-    "tidyval": "^1.0.0"
+    "tidyval": "^1.0.0",
+    "tmustache": "^1.0.1"
   }
 }
