@@ -28,6 +28,7 @@
     "tidydir": "^1.0.4",
     "tidypath": "^1.5.2",
     "tidyval": "^1.0.0",
+    "tmarkdown": "^1.0.1",
     "tmustache": "^1.0.1"
   }
 }
