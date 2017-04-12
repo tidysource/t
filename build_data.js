@@ -9,7 +9,7 @@ module.exports = function build_data(_db){
 	
 	val(_db).validate('object');
 	
-	for (netPath in _db){	//file.netPath
+	for (var netPath in _db){	//file.netPath
 		_db[netPath]._data = _data;
 		
 		var treePath = path.tree(netPath);

@@ -10,14 +10,14 @@ module.exports = function build_db(files){
 	var _db = {}
 	files.map(function(file){
 		val(file).validate('object');
-		val(file.netPath).validate('sting');
+		val(file.netPath).validate('string');
 		
 		if (typeof _db[file.netPath] === 'undefined'){
 			_db[file.netPath] = {};
 		}
 		
 		//Merge
-		for (prop in file.parsed){
+		for (var prop in file.parsed){
 			if (typeof _db[file.netPath][prop] === 'undefined'){
 				_db[file.netPath][prop] = file.parsed[prop];
 			}

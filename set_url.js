@@ -3,7 +3,7 @@
 var path = require('tidypath');
 
 module.exports = function folderize(_db, baseURL){
-	for (netPath in _db){
+	for (var netPath in _db){
 		var item = _db[netPath];
 		if (item._content){
 			//Item write path

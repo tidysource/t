@@ -1,6 +1,7 @@
 'use strict';
 
 var tMustache = require('tmustache');
+var tMarkdown = require('tmarkdown');
 
 var config = {
 	baseURL : './',
@@ -10,9 +11,9 @@ var config = {
 		result : './_public'
 	},
 	parse : {
+		md : tMarkdown,
 		json : JSON.parse,
 		html : 'utf8',
-		md : 'utf8',
 		js : 'utf8',
 		css : 'utf8'
 	},

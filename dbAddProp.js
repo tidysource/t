@@ -9,7 +9,7 @@ module.exports = function addProp(_db, propName, propVal){
 	val(propName).validate('string');
 	val(propName).invalidate('undefined');
 	
-	for (item in _db){
+	for (var item in _db){
 		_db[item][propName] = propVal;
 	}
 	

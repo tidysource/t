@@ -5,7 +5,7 @@ var dir = require('tidydir');
 
 module.exports = function write(_db, _templates, writePath, baseURL){
 	var toWrite = [];
-	for (netPath in _db){
+	for (var netPath in _db){
 		var item = _db[netPath];
 		if (item._content){
 			var fileObj = {};
