@@ -19,6 +19,7 @@ test('tMarkdown()', function(assert){
 
 	var markdown = '# Hello world';
 	var result = {
+		_options: 'utf-8',
 		_ext : '.html',
 		_content : '<h1>Hello world</h1>'
 	};
