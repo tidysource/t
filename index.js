@@ -23,12 +23,23 @@ module.exports = function t(param){
 	}
 	
 	return Promise.all([
-			dir.readTree(config.folders.data, null), //read data as buffer obj
+			dir.readTree(config.folders.data, 
+						null, //read data as buffer obj
+						//Ignore dotfiles, except .htaccess
+						function (input){
+							if (!path.dotfile(input) ||
+								path.dotfile(input) === '.htaccess'){
+								return true;
+							}
+							else{
+								return false;
+							}
+						}),
 			dir.readTree(config.folders.templates)
 		]).then(function(result){
 			var tree = result[0];
 			var templatesTree = result[1];
-		
+			
 			/*
 			Net paths
 			---------
