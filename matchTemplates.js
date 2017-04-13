@@ -15,8 +15,8 @@ module.exports = function matchTemplates(_db, templateFiles){
 	});
 	
 	//Match
-	for (var itemPath in _db){
-		var item = _db[itemPath];
+	for (var netPath in _db){
+		var item = _db[netPath];
 		
 		if (!item._isAsset){	
 			var template = null;
