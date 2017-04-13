@@ -21,9 +21,9 @@ module.exports = function t(param){
 	if (typeof param === 'object'){
 		config = Object.assign(config, param);
 	}
-	
+
 	return Promise.all([
-			dir.readTree(config.folders.data, 
+			dir.readTree(config.folders.data,
 						null, //read data as buffer obj
 						//Ignore dotfiles, except .htaccess
 						function (input){
@@ -39,7 +39,7 @@ module.exports = function t(param){
 		]).then(function(result){
 			var tree = result[0];
 			var templatesTree = result[1];
-			
+
 			/*
 			Net paths
 			---------
@@ -48,32 +48,32 @@ module.exports = function t(param){
 				var str = file.path.slice(config.folders.data.length);
 				file.netPath = path.rmExt(str);
 			});
-			var templates = templatesTree.files.map(function(templates){
+			var templates = templatesTree.files.map(function(template){
 				var str = template.path.slice(config.folders.templates.length);
 				template.netPath = path.rmExt(str);
 			});
-			
+
 			/*
 			Parse files
 			-----------
 			File contents get parsed into an object (file.parsed).
-		
-			If file is meant to be present in result (written) then 
+
+			If file is meant to be present in result (written) then
 			it must have _content. It will also get a default ._ext
 			which is the same as the extension of the original file.
 			If file is not parsed it will automatically get _content
 			(which is same as file content, by default buffer object).
-			
-			Parsers may not return objects starting with "_", 
-			except ._ext and ._content, ._options and ._isAsset. 
-			
+
+			Parsers may not return objects starting with "_",
+			except ._ext and ._content, ._options and ._isAsset.
+
 			_isAsset property means the file should be copied as-is
 			and therefor it won't be be parsed later in a template
-			
+
 			Only meta data files may share file name in same path
 			*/
 			files = parseFile(tree.files, config.parse);
-			
+
 			/*
 			Data objects
 			------------
@@ -85,14 +85,14 @@ module.exports = function t(param){
 			*/
 			var _db = db(files); //where data is kept
 			_db = build_all(_db); //add ._all properties to items in db
-			
+
 			var _templates = build_templates(templates);	//Template files
 			_db = dbAddProp(_db, '._template', _templates);	//add ._templates reference to all items
 			_db = matchTemplates(_db, templates);	//add ._templateMatch reference to all items
-			//Note: matched template will also provide fallback (unless set by parser) ._ext 
-			
+			//Note: matched template will also provide fallback (unless set by parser) ._ext
+
 			_db = build_data(_db); //reference object to show relation between items in _db
-			
+
 			/*
 			Set ._url
 			---------
@@ -100,20 +100,20 @@ module.exports = function t(param){
 			Make files that have .html extension to treePath/itemName/index.html
 			*/
 			_db = set_url(_db, config.baseURL);
-			
+
 			/*
 			Write
 			-----
 			Nothing should change (just make file objects).
-			
+
 			if item._content write it
-				if item._isAsset is falsy 
+				if item._isAsset is falsy
 					run thgouth template engine
-				else 
+				else
 					just copy over
-			else (no ._content) 
+			else (no ._content)
 				ignore (don't write it's a meta data item)
 			*/
 			return write(_db, _templates, config.folders.result, config.baseURL);
-		});	
+		});
 };
