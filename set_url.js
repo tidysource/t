@@ -9,17 +9,16 @@ module.exports = function folderize(_db, baseURL){
 			//Item write path
 			var folderize = '';
 			if (item._ext === '.html'){
-				folderize = path.separator + 'index.html';
-			}			
+				folderize = path.separator + 'index';
+			}
 			_db[netPath]._url = [
-								baseURL,
-								path.separator, 
+								path.separator,
 								netPath,
 								folderize,
 								item._ext
 								].join('');
 		}
 	}
-	
+
 	return _db;
 };
