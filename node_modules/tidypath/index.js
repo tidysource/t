@@ -36,4 +36,7 @@ path.filter = require('./filter.js');
 avaliableProp(path, 'isFile');
 path.isFile = require('./isFile.js');
 
+avaliableProp(path, 'separator');
+path.separator = path.sep;
+
 module.exports = path;

@@ -20,7 +20,7 @@ var paths = [
 	'hello',
 	'foo/bar',
 	'hello/world',
-	'hello/world/tidy/'	
+	'hello/world/tidy/'
 ]
 
 path.lvls(paths);
@@ -45,7 +45,7 @@ var paths = [
 		'hello/world',
 		'foo/bar'
 	]
-	
+
 path.byDepth(paths);
 /*
 [
@@ -128,8 +128,8 @@ path.tree('') //''
 
 #### filter()
 Returns a subset based on filter.
-Filter can be file extension as string 
-or array of strings, 
+Filter can be file extension as string
+or array of strings,
 or filter can be a function.
 ```javascript
 var path = require('tidypath');
@@ -139,7 +139,7 @@ var paths = [
 		'.dot',
 		0
 	];
-	
+
 path.filter('./hello.txt', '.txt');	//['./hello.txt']
 path.filter(paths, '.js');	//['hello.js']
 path.filter(paths, ['.js']);	//['hello.js']
@@ -149,7 +149,7 @@ path.filter(paths, '.js', false);	//['hello.js','hello/world.txt','.dot',0];
 ```
 
 #### isFile()
-Returns true/false path is a file 
+Returns true/false path is a file
 (either has a file extension or is a dotfile).
 ```javascript
 path.isFile('./hello/world.txt')	//true
@@ -162,4 +162,9 @@ path.isFile('.dotfile')	//true
 path.isFile('./')	//false
 path.isFile('.')	//false
 path.isFile('')	//false
+```
+
+### separator
+```javascript
+path.separator	//on Windows \ and / on POSIX
 ```
