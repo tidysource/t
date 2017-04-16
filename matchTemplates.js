@@ -11,7 +11,7 @@ module.exports = function matchTemplates(_db, templateFiles){
 	//Build index
 	var templates = {};
 	templateFiles.map(function(template){
-		templates[template.path] = template;
+		templates[template.netPath] = template;
 	});
 
 	//Match
@@ -30,7 +30,6 @@ module.exports = function matchTemplates(_db, templateFiles){
 				while(template === null){
 					var i = netPath.lastIndexOf(path.separator) + 1;
 					netPath = netPath.slice(0,i) + '_default';
-
 					if (templates[netPath]){
 						template = templates[netPath];
 						break;

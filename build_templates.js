@@ -10,8 +10,8 @@ module.exports = function build_templates(files){
 	files.map(function(template){
 		var treePath = path.tree(template.netPath);
 		var name = template.netPath.slice(treePath);
-		
-		var _templatesTree = templates;
+
+		var _templatesTree = _templates;
 		if (treePath.length){
 			_templatesTree = objRef(_templates, treePath, path.delimiter, true);
 		}

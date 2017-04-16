@@ -34,4 +34,3 @@ test('t()', function(assert){
 		assert.fail('t() failed');
 	});
 });
-
