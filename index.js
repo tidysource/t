@@ -3,6 +3,7 @@
 var dir = require('tidydir');
 var path = require('tidypath');
 var val = require('tidyval');
+var rmLeading = require('rmleading');
 
 var config = require('./config.js');
 var parseFile = require('./parseFile.js');
@@ -47,10 +48,16 @@ module.exports = function t(param){
 			var files = tree.files.map(function(file){
 				var str = file.path.slice(config.folders.data.length);
 				file.netPath = path.rmExt(str);
+				file.netPath = rmLeading(file.netPath, path.separator);
+
+				return file;
 			});
 			var templates = templatesTree.files.map(function(template){
 				var str = template.path.slice(config.folders.templates.length);
 				template.netPath = path.rmExt(str);
+				template.netPath = rmLeading(template.netPath, path.separator);
+
+				return template;
 			});
 
 			/*
@@ -114,6 +121,9 @@ module.exports = function t(param){
 			else (no ._content)
 				ignore (don't write it's a meta data item)
 			*/
-			return write(_db, _templates, config.folders.result, config.baseURL);
+			return write(_db, _templates,
+						config.folders.result,
+						config.baseURL,
+						config.templateEngine);
 		});
 };
