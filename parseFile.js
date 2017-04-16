@@ -52,7 +52,7 @@ module.exports = function parseFile(files, parserObj){
 			}
 			//Set default extension (same as content source file)
 			if (typeof file.parsed._ext === 'undefined'){
-				file._ext = path.ext(file.path);
+				file.parsed._ext = file.ext;
 			}
 		}
 
