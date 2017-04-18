@@ -97,6 +97,9 @@ path.file('foo/bar') //''
 path.file('') //''
 ```
 
+#### filename()
+Synonym for file()
+
 #### dotfile()
 Returns dotfile in path.
 ```javascript

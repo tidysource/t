@@ -108,6 +108,24 @@ test('file()', function(assert){
 	assert.equal(path.file(''), '');
 });
 
+test('filename()', function(assert){
+    assert.plan(10);
+
+    assert.equal(path.filename('foo.txt'), 'foo.txt');
+    assert.equal(path.filename('./foo.txt'), 'foo.txt');
+    assert.equal(path.filename('foo.ver100.txt'), 'foo.ver100.txt');
+    assert.equal(path.filename('foo/bar.txt'), 'bar.txt');
+    assert.equal(path.filename('foo/.bar/hello.txt'), 'hello.txt',
+                            'dotfolder');
+    assert.equal(path.filename('.bar/'), '',
+                            'dotfolder');
+    assert.equal(path.filename('foo/.bar/hello'), '',
+                            'dotfolder');
+    assert.equal(path.filename('.dotfile'), '.dotfile');
+    assert.equal(path.filename('foo/bar'), '')
+    assert.equal(path.filename(''), '');
+});
+
 test('tree()', function(assert){
     assert.plan(9);
 
