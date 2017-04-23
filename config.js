@@ -2,12 +2,19 @@
 
 var tMustache = require('tmustache');
 var tMarkdown = require('tmarkdown');
+var path = require('tidypath');
 
 var config = {
-	baseURL : './',
-	folders : {
+	data : {
+		options : null,
+		type : {
+			asset : /[\\\/]asset[\\\/]/,
+			meta : /[\\\/]meta[\\\/]/
+		}
+	},
+	folder : {
 		data : './_data',
-		templates : './_template',
+		template : './_template',
 		result : './_public'
 	},
 	parse : {
@@ -17,11 +24,22 @@ var config = {
 		js : 'utf8',
 		css : 'utf8'
 	},
-	templateEngine : tMustache,
-	write : {
-		string : 'uft8' // options
+	url: {
+		base : './',
+		folderize : true,
+		rebase : [{
+			from : /^\.[\\\/]posts[\\\/].+/,
+			to : function(param){
+					let original = param.match;
+					let separator = path.separator;
+					return original.replace(/[\\\/][0-9]+[\\\/]/, separator);
+				},
+		}],
+	},
+	template : {
+		engine : tMustache,
+		options : 'utf8'
 	}
-	//Read templates as utf8
 };
 
 module.exports = config;

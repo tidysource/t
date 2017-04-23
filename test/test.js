@@ -18,10 +18,12 @@ test('t()', function(assert){
     assert.plan(1);
 
 	var testConfig = {
-		baseURL : './',
-		folders : {
+		url : {
+            base : './',
+        },
+		folder : {
 			data : './test/_data',
-			templates : './test/_template',
+			template : './test/_template',
 			result : './test/_public'
 		}
 	};

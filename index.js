@@ -1,129 +1,160 @@
 'use strict';
 
-var dir = require('tidydir');
-var path = require('tidypath');
-var val = require('tidyval');
-var rmLeading = require('rmleading');
+const dir = require('tidydir');
+const path = require('tidypath');
+const val = require('tidyval');
+const merge = require('tidymerge');
 
-var config = require('./config.js');
-var parseFile = require('./parseFile.js');
-var db = require('./db.js');
-var dbAddProp = require('./dbAddProp.js');
-var build_all = require('./build_all.js');
-var build_templates = require('./build_templates.js');
-var matchTemplates = require('./matchTemplates.js');
-var build_data = require('./build_data.js');
-var set_url = require('./set_url.js');
-var write = require('./write.js');
+const nameConflict = require('./nameConflict.js');
+const parseFile = require('./parseFile.js');
+const setUrl = require('./setUrl.js');
+const dataType = require('./dataType.js');
+const db = require('./db.js');
+const template = require('./template.js');
+const matchTemplate = require('./matchTemplate.js');
+const write = require('./write.js');
+
+//Dotfile filter
+var skipDotfile = function skipDotfile(input) {
+	if (!path.dotfile(input) ||
+		path.dotfile(input) === '.htaccess'){
+		return true;
+	}
+	else{
+		return false;
+	}
+};
 
 module.exports = function t(param){
 	val(param).validate(['undefined','object']);
-	//Overwrite config with data in param
+	let config = require('./config.js');
+	//Update config with data in param
 	if (typeof param === 'object'){
-		config = Object.assign(config, param);
+		config = merge([config,param]);
 	}
-
+	val(config.folder.data).validate('string');
+	val(config.folder.template).validate('string');
 	return Promise.all([
-			dir.readTree(config.folders.data,
-						null, //read data as buffer obj
-						//Ignore dotfiles, except .htaccess
-						function (input){
-							if (!path.dotfile(input) ||
-								path.dotfile(input) === '.htaccess'){
-								return true;
-							}
-							else{
-								return false;
-							}
-						}),
-			dir.readTree(config.folders.templates)
-		]).then(function(result){
-			var tree = result[0];
-			var templatesTree = result[1];
+		//Read data as buffer obj
+		dir.readTree(config.folder.data, config.data.options, skipDotfile),
+		dir.readTree(config.folder.template, config.template.options)
+	])
+	.then(function(result){
+		let data = result[0];
+		let templates = result[1];
 
-			/*
-			Net paths
-			---------
-			*/
-			var files = tree.files.map(function(file){
-				var str = file.path.slice(config.folders.data.length);
-				file.netPath = path.rmExt(str);
-				file.netPath = rmLeading(file.netPath, path.separator);
+		/*
+		Check filname conflicts
+		-----------------------
+		Files and folders should not share the same name.
 
-				return file;
-			});
-			var templates = templatesTree.files.map(function(template){
-				var str = template.path.slice(config.folders.templates.length);
-				template.netPath = path.rmExt(str);
-				template.netPath = rmLeading(template.netPath, path.separator);
+		Files should not share filenames.
 
-				return template;
-			});
+		Throws error on a filename conflict.
+		*/
+		nameConflict(data.files, data.dirs);
 
-			/*
-			Parse files
-			-----------
-			File contents get parsed into an object (file.parsed).
+		/*
+		Parse
+		-----
+		File gets it's original file extension saved under file.ext
 
-			If file is meant to be present in result (written) then
-			it must have _content. It will also get a default ._ext
-			which is the same as the extension of the original file.
-			If file is not parsed it will automatically get _content
-			(which is same as file content, by default buffer object).
+		Files that are (later) to appear in the result folder must
+		have file.parsed._content
 
-			Parsers may not return objects starting with "_",
-			except ._ext and ._content, ._options and ._isAsset.
+		file.parsed._ext is set by parser or defaults to original
+		file extension.
 
-			_isAsset property means the file should be copied as-is
-			and therefor it won't be be parsed later in a template
+		file.parsed._options is set by parser or defaults to original
+		file options.
 
-			Only meta data files may share file name in same path
-			*/
-			files = parseFile(tree.files, config.parse);
+		To sum up a parser may set _content, _ext, _options as well
+		as any other property NOT starting with "_".
 
-			/*
-			Data objects
-			------------
-			All items relate to one another by their common path
-			All data is stored in _db (array of objects)
-			._data is an object for semantic referencing in the templating enigne
-			each item stored in the _db has an array ._all (array of direct properties)
-			as well as ._templates to enable referencing of templates
-			*/
-			var _db = db(files); //where data is kept
-			_db = build_all(_db); //add ._all properties to items in db
+		Sets
+		file.parsed
+		*/
+		data.files = parseFile(data.files, config.parse);
 
-			var _templates = build_templates(templates);	//Template files
-			_db = dbAddProp(_db, '._template', _templates);	//add ._templates reference to all items
-			_db = matchTemplates(_db, templates);	//add ._templateMatch reference to all items
-			//Note: matched template will also provide fallback (unless set by parser) ._ext
+		/*
+		Set url path
+		------------
+		Sets
+		file.parsed._url
+		*/
+		data.files = setUrl(data.files,
+							config.folder.data,
+							config.url.base,
+							config.url.folderize,
+							config.url.rebase);
 
-			_db = build_data(_db); //reference object to show relation between items in _db
+		/*
+		Data type
+		---------
+		Data type value is truthy/falsy
 
-			/*
-			Set ._url
-			---------
-			Sets the ._url property (link to content)
-			Make files that have .html extension to treePath/itemName/index.html
-			*/
-			_db = set_url(_db, config.baseURL);
+		All data types may be parsed via parser.
 
-			/*
-			Write
-			-----
-			Nothing should change (just make file objects).
+		Unlike "meta" data type "asset" and "content" will appear in
+		the result folder. Difference between "asset" and "content"
+		is that "asset" will NOT be parsed via template.
 
-			if item._content write it
-				if item._isAsset is falsy
-					run thgouth template engine
-				else
-					just copy over
-			else (no ._content)
-				ignore (don't write it's a meta data item)
-			*/
-			return write(_db, _templates,
-						config.folders.result,
-						config.baseURL,
-						config.templateEngine);
-		});
+		Sets data type
+		at file.parsed._isAsset
+		or file.parsed._isMeta
+		or file.parsed._isContent
+		*/
+		data.files = dataType(data.files, config.data.type);
+
+		/*
+		Make templates object
+		---------------------
+		*/
+		let _template = template(templates.files, config.folder.template);
+
+		/*
+		Makde data objects for file.parsed
+		----------------------------------
+		Sets
+		file.parsed._all (_db objects of direct content)
+		file.parsed._tree (folder _db obj)
+		file.parsed._db (_db object of data folder)
+		file.parsed._dbPath (path within db object)
+		file.parsed._template (templates object)
+		*/
+		data.files = db(data.files,
+						data.dirs,
+						config.folder.data,
+						_template);
+
+		/*
+		Match template
+		--------------
+		Template is matched as same path (as data path), but in
+		template folder. Otherwise, the deepest template named
+		_default in the same path.
+
+		Template matching is relative to data folder. That way
+		it's possible to change the url paths without breaking
+		template matching.
+
+		Sets
+		file.parsed._templateMatch
+		*/
+		data.files = matchTemplate(data.files,
+									templates.files,
+									config.folder.data,
+									config.folder.template);
+
+		/*
+		Write
+		-----
+		Nothing should change (just make file objects).
+		*/
+		return write(data.files,
+					config.folder.result,
+					config.url.base,
+					config.template.engine,
+					_template);
+	});
 };

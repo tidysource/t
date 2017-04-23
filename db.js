@@ -1,24 +1,65 @@
 'use strict';
 
-var val = require('tidyval');
-var path = require('tidypath');
-var objRef = require('objref');
+const val = require('tidyval');
+const path = require('tidypath');
+const objPath = require('./objPath.js');
+const objRef = require('objref');
+const rmTrailing = require('rmTrailing');
+const rmLeading = require('rmLeading');
 
-module.exports = function _db(files){
-	//Deal with shared filenames
-	var data = {};
-	files.map(function (file){
-		var id = path.rmExt(file.path);
-		if (typeof data[id] === 'undefined'){
-			data[id] = file.parsed;
+module.exports = function _db(files, dirs, dataFolderPath, _template){
+	val(files).validate('array');
+	let db = {
+		_all : [],
+		_db : this,
+		_tree : null,
+		_template : _template,
+	};
+
+	dirs.map(function (dirPath){
+		dirPath = objPath(dirPath, dataFolderPath);
+		dirPath = rmTrailing(dirPath, path.separator);
+		let treePath = path.parent(dirPath);
+		let name = dirPath.slice(treePath.length);
+		name = rmLeading(name, path.separator);
+
+		let dbTree = db;
+		if (treePath.length){
+			dbTree = objRef(db, treePath, path.delimiter, true);
 		}
-		else{
-			throw new Error([
-							'Filename conflict at ',
-							file.path
-							].join('\r\n'));
-		}
+
+		let dir = {
+			_all : [],
+			_db : db,
+			_tree : dbTree,
+			_template : _template
+		};
+		dbTree[name] = dir;
+		dbTree._all.push(dir);
 	});
 
-	//Remove
+	return files.map(function (file){
+		let dbPath = objPath(file.path, dataFolderPath);
+		file.parsed._dbPath = dbPath;
+
+		let treePath = path.tree(dbPath + '.extForTree');
+		let name = dbPath.slice(treePath.length)
+		name = rmLeading(name, path.separator);;
+
+		let dbTree = db;
+		if (treePath.length){
+			dbTree = objRef(db, treePath, path.separator, true);
+		}
+
+		dbTree[name] = file.parsed;
+
+		//._all, ._db, ._tree
+		dbTree._all.push(file.parsed);
+		file.parsed._all = [];
+		file.parsed._db = db;
+		file.parsed._tree = dbTree;
+		file.parsed._template = _template;
+
+		return file;
+	});
 };
