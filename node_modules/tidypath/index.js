@@ -33,6 +33,9 @@ path.dotfile = require('./dotfile.js');
 avaliableProp(path, 'tree');
 path.tree = require('./tree.js');
 
+avaliableProp(path, 'parent');
+path.parent = require('./parent.js');
+
 avaliableProp(path, 'filter');
 path.filter = require('./filter.js');
 

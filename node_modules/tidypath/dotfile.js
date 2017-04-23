@@ -3,28 +3,27 @@
 var path = require('path');
 
 module.exports = function dotfile(str){
-	var dot = str.lastIndexOf('.');
-	var slash = str.lastIndexOf(path.sep);
-	
-	if (slash + 1 === dot){
-		var result = str.slice(dot);
-		if (result.length > 1){ //not '.'
-			return str.slice(dot);
-		}
-		else{
-			return '';
+	let result = '';
+	let slash = str.lastIndexOf(path.sep);
+	if (slash < 0){ //Slash not found
+		if (str[0] === '.' &&
+			str !== '.'){
+			result = str;
 		}
 	}
 	else{
-		return '';
+		let dot = str.slice(slash).indexOf('.') + slash; //1st dot after slash
+		if (slash + 1 === dot){	//1st dot is found and immediately after slash 
+			result = str.slice(dot);
+		}
 	}
+	return result;
+
 	/*
-	Regex alternative: 
-	(?:^|[\\\/\.])\.[^\\\/]+$ 
-	Although should only include 
+	Regex alternative:
+	(?:^|[\\\/\.])\.[^\\\/]+$
+	Although should only include
 	separator, not escape character;
 	just use new new RegExp() & path.sep
 	*/
 };
-
-

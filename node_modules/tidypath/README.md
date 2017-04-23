@@ -30,6 +30,7 @@ path.lvls(paths);
 	['foo/bar','hello/world'],
 	['hello/world/tidy/'],
 ];
+*/
 ```
 
 #### byDepth()
