@@ -1,7 +1,7 @@
 'use strict';
 
 var tMustache = require('tmustache');
-var tMarkdown = require('tmarkdown');
+var tMatter = require('tmatter');
 var path = require('tidypath');
 
 var config = {
@@ -18,7 +18,7 @@ var config = {
 		result : './_public'
 	},
 	parse : {
-		md : tMarkdown,
+		md : tMatter,
 		json : JSON.parse,
 		html : 'utf8',
 		js : 'utf8',
